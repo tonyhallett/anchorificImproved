@@ -43,6 +43,8 @@ if ( typeof Object.create !== 'function' ) {
 			self.$elem = $( elem );
 
 			self.opt = $.extend( {},  this.opt, options );
+		    //do a function test on self.opt.topScrollIn
+		    //self.opt.topScrollOut
 
             
 			self.headers = self.opt.findHeaders(self.$elem);
@@ -67,9 +69,17 @@ if ( typeof Object.create !== 'function' ) {
 			top: '.top', // back to top button or link class
 			spy: true, // scroll spy
 			spyOffset: !0, // specify heading offset for spy scrolling
-            minTopScroll:200,
+			minTopScroll: 200,
 			findHeaders: function ($anchored) {
 			    return $anchored.find(this.headers);
+			},
+			fadeInOptions: {},
+			fadeOutOptions:{},
+			topScrollIn: function ($top) {
+			    $top.fadeIn(this.fadeInOptions);
+			},
+			topScrollOut: function ($top) {
+			    $top.fadeOut(this.fadeOutOptions);
 			},
 		    headerAnchorClass:'',
 			activeClassName: 'active',
@@ -214,20 +224,17 @@ if ( typeof Object.create !== 'function' ) {
 		top: function( that ) {
 			var self = this, top = self.opt.top, back;
 			var minTopScroll = self.opt.minTopScroll;
+		    
 			if ( top !== false ) {
-				
+			    var $top=$(top);
 			    if ($(that).scrollTop() > minTopScroll) {
-			        if ($('#top').css('display') === 'none') {
-			            $('#top').css('display', '')
-			        }
-			        
-				    $(top).fadeIn();
+			        self.opt.topScrollIn($top);
 				} else {
-				    $(top).fadeOut();
+			        self.opt.topScrollOut($top);
 				}
 			}
 		},
-
+		
 		spy: function () {
 		    var self = this, current, list, prev,prevExact
 
@@ -254,7 +261,7 @@ if ( typeof Object.create !== 'function' ) {
 		        
 
 		        if (current && current.length) {
-		            console.log("Last header in view, " + current.text());
+		            
 		            // get all li tag that contains href of # ( all the parents )
 		            list = $('li:has(a[href="#' + current.attr('id') + '"])');
 		            prevExact = list.eq(list.length - 1);
